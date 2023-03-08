@@ -12,7 +12,7 @@ class FileManager:
     def save_file(self, file_path):
         file_id = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f"))
         file_name = os.path.basename(file_path)
-        destination_path = os.path.join(self.storage_directory, file_id)
+        destination_path = os.path.join(self.storage_directory, file_id + '.' + file_path.split('.')[-1])
         shutil.copy(file_path, destination_path)
         return file_id
 
@@ -48,4 +48,14 @@ class FileManager:
             if file_path:
                 files.append([file_id, os.path.abspath(file_path)])
         return files
+
+    def get_file_path_by_id(self, id):
+        path_to_directory = os.path.join(os.getcwd(), "file_storage")
+        for filename in os.listdir(path_to_directory):
+            if filename.startswith(id):
+                path_to_file = os.path.join(path_to_directory, filename)
+                return path_to_file
+                
+
+
 
