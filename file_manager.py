@@ -46,7 +46,6 @@ class FileManager:
         for file_id in os.listdir(self.storage_directory):
             file_path = self.get_file_path(file_id)
             if file_path:
-                files.append([file_id, file_path])
+                files.append([file_id, os.path.abspath(file_path)])
         return files
-
 
