@@ -77,7 +77,6 @@ class FileManagerGUI(tk.Frame):
 
     def get_path(self):
         file_id = self.id_input.get()
-        if file_id
         file_path = self.file_manager.get_file_path_by_id(file_id)
         if file_path:
             self.path_output.config(text=file_path) 
