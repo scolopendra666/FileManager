@@ -23,9 +23,10 @@ class FileManager:
         return None
 
     def delete_file(self, file_id):
-        file_path = self.get_file_path(file_id)
-        if file_path:
-            os.remove(file_path)
+        path_to_directory = os.path.abspath("file_storage")
+        for filename in os.listdir(path_to_directory):
+            if filename.startswith(file_id):
+                os.remove(os.path.join(path_to_directory, filename))
 
     def rename_file(self, old_file_id, new_file_id):
         old_file_path = self.get_file_path(old_file_id)
