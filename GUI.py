@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
+import shutil
 
 from file_manager import FileManager
 
@@ -33,9 +34,17 @@ class FileManagerGUI(tk.Frame):
         self.list_button = tk.Button(self, text="Список файлов", command=self.list_files)
         self.list_button.pack(side="top")
 
+        # кнопка получения списка файлов по айди
+        self.list_button = tk.Button(self, text="Список файлов по id", command=self.get_paths_thr_ids)
+        self.list_button.pack(side="top")
+
         # кнопка получения пути одного файла
         self.list_button = tk.Button(self, text="Получение пути файла", command=self.get_path)
         self.list_button.pack(side="top")
+
+        # кнопка резервного копирования файла
+        self.backup_button = tk.Button(self, text="Резервное копирование", command=self.backup_file)
+        self.backup_button.pack(side="top")
 
         # поле ввода идентификатора файла
         self.id_input = tk.Entry(self, width=70)
@@ -78,10 +87,31 @@ class FileManagerGUI(tk.Frame):
     def get_path(self):
         file_id = self.id_input.get()
         file_path = self.file_manager.get_file_path_by_id(file_id)
-        if file_path:
+        if file_id and file_path:
             self.path_output.config(text=file_path) 
         else:
             self.path_output.config(text="Данного id не существует")
+
+
+    def backup_file(self):
+        file_id = self.id_input.get()
+        file_path = self.file_manager.get_file_path_by_id(file_id)
+        if file_id and file_path:
+            backup_path = os.path.join(os.getcwd(), "backup")
+            os.makedirs(backup_path, exist_ok=True)
+            backup_file_path = shutil.copy2(file_path, backup_path)
+            self.path_output.config(text="Файл скопирован в {}".format(backup_file_path)) 
+        else:
+            self.path_output.config(text="Данного id не существует")
+
+
+    def get_paths_thr_ids(self):
+        file_ids = self.id_input.get()
+        file_path = self.file_manager.get_file_paths(file_ids)
+        if file_ids and file_path:
+            self.path_output.config(text=file_path)
+        else: 
+            self.path_output.config(text="Данных id не существует")
 
 
 root = tk.Tk()
