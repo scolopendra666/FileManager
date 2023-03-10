@@ -1,13 +1,17 @@
 import os
 import shutil
 import datetime
+import time
 
 
 class FileManager:
     def __init__(self):
         self.storage_directory = "file_storage"
+        self.backup_directory = "backup_storage"
         if not os.path.exists(self.storage_directory):
             os.makedirs(self.storage_directory)
+        if not os.path.exists(self.backup_directory):
+            os.makedirs(self.backup_directory)
 
     def save_file(self, file_path):
         file_id = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f"))
@@ -29,17 +33,20 @@ class FileManager:
                 os.remove(os.path.join(path_to_directory, filename))
 
     def rename_file(self, old_file_id, new_file_id):
-        old_file_path = self.get_file_path(old_file_id)
-        new_file_path = os.path.join(self.storage_directory, new_file_id)
-        if old_file_path and not os.path.exists(new_file_path):
-            os.rename(old_file_path, new_file_path)
+        path_to_directory = os.path.abspath("file_storage")
+        for filename in os.listdir(path_to_directory):
+            if filename.startswith(old_file_id):
+                res = filename.split(".")[-1]
+                old_file_path = os.path.join(path_to_directory, filename)
+                new_file_path = os.path.join(path_to_directory, new_file_id + "." + res)
+                os.rename(old_file_path, new_file_path)	
 
     def get_file_paths(self, file_ids):
         file_paths = []
-        for file_id in file_ids:
-            file_path = self.get_file_path(file_id)
-            if file_path:
-                file_paths.append(file_path)
+        for filename in os.listdir(self.storage_directory):
+            for file_id in file_ids.split():
+                if filename.startswith(file_id):
+                    file_paths.append(os.path.join(self.storage_directory, filename))
         return file_paths
 
     def list_file(self):
@@ -56,7 +63,22 @@ class FileManager:
             if filename.startswith(id):
                 path_to_file = os.path.join(path_to_directory, filename)
                 return path_to_file
-                
 
-
-
+    def create_backup(self, backup_time=None):
+        if not backup_time:
+            backup_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        backup_dir = os.path.join(self.storage_directory, 'backups')
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+        backup_name = f'backup_{backup_time}'
+        backup_path = os.path.join(backup_dir, backup_name)
+        if os.path.exists(backup_path):
+            backup_name = f'backup_{backup_time}_1'
+            backup_path = os.path.join(backup_dir, backup_name)
+        i = 2
+        while os.path.exists(backup_path):
+            backup_name = f'backup_{backup_time}_{i}'
+            backup_path = os.path.join(backup_dir, backup_name)
+            i += 1
+        shutil.copytree(self.storage_directory, backup_path)
+        return backup_path
