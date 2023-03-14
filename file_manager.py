@@ -72,13 +72,5 @@ class FileManager:
             os.makedirs(backup_dir)
         backup_name = f'backup_{backup_time}'
         backup_path = os.path.join(backup_dir, backup_name)
-        if os.path.exists(backup_path):
-            backup_name = f'backup_{backup_time}_1'
-            backup_path = os.path.join(backup_dir, backup_name)
-        i = 2
-        while os.path.exists(backup_path):
-            backup_name = f'backup_{backup_time}_{i}'
-            backup_path = os.path.join(backup_dir, backup_name)
-            i += 1
         shutil.copytree(self.storage_directory, backup_path)
         return backup_path
