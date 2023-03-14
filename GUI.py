@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 import shutil
+import schedule
 
 from file_manager import FileManager
 
@@ -13,8 +14,9 @@ class FileManagerGUI(tk.Frame):
         self.master.title("Файловый менеджер")
         self.pack()
         self.file_manager = FileManager()
-
         self.create_widgets()
+        self.master.after(60000*60*24, self.file_manager.auto_backup)
+
 
     def create_widgets(self):
         # кнопка сохранения файла
@@ -60,8 +62,6 @@ class FileManagerGUI(tk.Frame):
             file_id = self.file_manager.save_file(filepath)
             self.path_output.config(text="Файл сохранен с идентификатором: {}".format(file_id.split(".")[0]))
 
-
-
     def delete_file(self):
         file_id = self.id_input.get()
         if file_id:
@@ -92,7 +92,6 @@ class FileManagerGUI(tk.Frame):
         else:
             self.path_output.config(text="Данного id не существует")
 
-
     def backup_file(self):
         file_id = self.id_input.get()
         file_path = self.file_manager.get_file_path_by_id(file_id)
@@ -104,7 +103,6 @@ class FileManagerGUI(tk.Frame):
         else:
             self.path_output.config(text="Данного id не существует")
 
-
     def get_paths_thr_ids(self):
         file_ids = self.id_input.get()
         file_path = self.file_manager.get_file_paths(file_ids)
@@ -112,6 +110,7 @@ class FileManagerGUI(tk.Frame):
             self.path_output.config(text=file_path)
         else: 
             self.path_output.config(text="Данных id не существует")
+    
 
 
 root = tk.Tk()

@@ -80,7 +80,7 @@ class FileManager:
             backup_time = datetime.datetime.now()
         else:
             backup_time = datetime.datetime.strptime(backup_time, '%Y%m%d%H%M%S')
-        prev_backup_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
+        prev_backup_time = datetime.datetime.now() + datetime.timedelta(hours=24)
         if prev_backup_time >= backup_time:
             backup_time_str = backup_time.strftime('%Y%m%d%H%M%S')
 
