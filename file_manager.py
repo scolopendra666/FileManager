@@ -66,7 +66,7 @@ class FileManager:
 
     def create_backup(self, backup_time=None):
         if not backup_time:
-            backup_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y%m%d%H%M%S')
+            backup_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         backup_dir = os.path.join(self.storage_directory, 'backups')
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
