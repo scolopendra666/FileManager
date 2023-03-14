@@ -14,7 +14,7 @@ class FileManager:
             os.makedirs(self.backup_directory)
 
     def save_file(self, file_path):
-        file_id = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f"))
+        file_id = str(datetime.datetime.now().strftime("%M%S%f"))
         file_name = os.path.basename(file_path)
         destination_path = os.path.join(self.storage_directory, file_id + '.' + file_path.split('.')[-1])
         shutil.copy(file_path, destination_path)
@@ -66,7 +66,7 @@ class FileManager:
 
     def create_backup(self, backup_time=None):
         if not backup_time:
-            backup_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            backup_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y%m%d%H%M%S')
         backup_dir = os.path.join(self.storage_directory, 'backups')
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
