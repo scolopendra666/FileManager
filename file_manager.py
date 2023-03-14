@@ -39,7 +39,7 @@ class FileManager:
                 res = filename.split(".")[-1]
                 old_file_path = os.path.join(path_to_directory, filename)
                 new_file_path = os.path.join(path_to_directory, new_file_id + "." + res)
-                os.rename(old_file_path, new_file_path)	
+                os.rename(old_file_path, new_file_path) 
 
     def get_file_paths(self, file_ids):
         file_paths = []
@@ -74,3 +74,24 @@ class FileManager:
         backup_path = os.path.join(backup_dir, backup_name)
         shutil.copytree(self.storage_directory, backup_path)
         return backup_path
+
+    def auto_backup(self, backup_time=None):
+        if backup_time is None:
+            backup_time = datetime.datetime.now()
+        else:
+            backup_time = datetime.datetime.strptime(backup_time, '%Y%m%d%H%M%S')
+        prev_backup_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
+        if prev_backup_time >= backup_time:
+            backup_time_str = backup_time.strftime('%Y%m%d%H%M%S')
+
+            backup_dir = os.path.join(self.backup_directory, backup_time_str)
+            os.makedirs(backup_dir, exist_ok=True)
+
+            for file_name in os.listdir(self.storage_directory):
+                file_path = os.path.join(self.storage_directory, file_name)
+                backup_file_path = os.path.join(backup_dir, file_name)
+                shutil.copy2(file_path, backup_file_path)
+            
+            return backup_dir
+
+        return None
