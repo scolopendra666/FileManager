@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 import shutil
 import schedule
-
+from datetime import datetime
 from file_manager import FileManager
 
 
@@ -46,6 +46,10 @@ class FileManagerGUI(tk.Frame):
 
         # кнопка резервного копирования файла
         self.backup_button = tk.Button(self, text="Резервное копирование", command=self.backup_file)
+        self.backup_button.pack(side="top")
+        
+        # изменение времени бэкапа
+        self.backup_button = tk.Button(self, text="Изменение времени резервного копирования", command=self.auto_b)
         self.backup_button.pack(side="top")
 
         # поле ввода идентификатора файла
@@ -110,6 +114,29 @@ class FileManagerGUI(tk.Frame):
             self.path_output.config(text=file_path)
         else: 
             self.path_output.config(text="Данных id не существует")
+
+
+    def accept_number(self):
+            self.number = self.number_entry.get()
+            self.number_window.destroy() 
+
+
+    def auto_b(self):
+        self.number_window = tk.Toplevel(root)
+        self.number_window.title("Введите время в секундах")
+        self.number_entry = tk.Entry(self.number_window)
+        self.number_entry.pack()
+        self.accept_button = tk.Button(self.number_window, text="Принять", command=self.accept_number)
+        self.accept_button.pack()
+        self.number_window.geometry("400x300+100+100")
+        self.number_window.wait_window()
+
+
+        self.number = int(eval(self.number))
+        #dt = datetime.fromtimestamp(int(self.number))
+        #self.number = dt.strftime('%Y%m%d%H%M%S')
+        self.file_manager.start(self.number)
+        self.path_output.config(text="Время изменено")
     
 
 

@@ -2,6 +2,7 @@ import os
 import shutil
 import datetime
 import time
+import schedule
 
 
 class FileManager:
@@ -75,23 +76,27 @@ class FileManager:
         shutil.copytree(self.storage_directory, backup_path)
         return backup_path
 
-    def auto_backup(self, backup_time=None):
-        if backup_time is None:
-            backup_time = datetime.datetime.now()
-        else:
-            backup_time = datetime.datetime.strptime(backup_time, '%Y%m%d%H%M%S')
-        prev_backup_time = datetime.datetime.now() + datetime.timedelta(hours=24)
-        if prev_backup_time >= backup_time:
-            backup_time_str = backup_time.strftime('%Y%m%d%H%M%S')
+    def auto_backup(self):
+        backup_time = datetime.datetime.now()
+        backup_time_str = backup_time.strftime('%Y%m%d%H%M%S')
 
-            backup_dir = os.path.join(self.backup_directory, backup_time_str)
-            os.makedirs(backup_dir, exist_ok=True)
+        backup_dir = os.path.join(self.backup_directory, backup_time_str)
+        os.makedirs(backup_dir, exist_ok=True)
 
-            for file_name in os.listdir(self.storage_directory):
-                file_path = os.path.join(self.storage_directory, file_name)
-                backup_file_path = os.path.join(backup_dir, file_name)
-                shutil.copy2(file_path, backup_file_path)
-            
-            return backup_dir
+        for file_name in os.listdir(self.storage_directory):
+            file_path = os.path.join(self.storage_directory, file_name)
+            backup_file_path = os.path.join(backup_dir, file_name)
+            shutil.copy2(file_path, backup_file_path)
 
-        return None
+        return backup_dir
+
+
+    def start(self, interval=None):
+        if interval is not None:
+            self.backup_interval = interval
+
+        schedule.every(self.backup_interval).seconds.do(self.auto_backup)
+
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
